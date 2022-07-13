@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+
+  api:
+    image: template:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+    environment:
+      - "DB_URL=jdbc:postgresql://db:5432/postgres"
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - "POSTGRES_PASSWORD=pass"
+
