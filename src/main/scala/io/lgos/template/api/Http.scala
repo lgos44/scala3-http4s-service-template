@@ -34,7 +34,7 @@ object Http extends Tapir with TapirJsonCirce with SchemaDerivation with StrictL
 
   val jsonErrorOutOutput: EndpointOutput[ErrorResponse] = jsonBody[ErrorResponse]
 
-  implicit class FOut[F[_]: Async, T](f: F[T]) {
+  extension [F[_]: Async, T](f: F[T]) {
     def toOut: F[Either[Failure, T]] =
       f.map(t => t.asRight[Failure]).recoverWith { case f: Failure =>
         logger.warnF(s"Request failed: ${f.message}") >>

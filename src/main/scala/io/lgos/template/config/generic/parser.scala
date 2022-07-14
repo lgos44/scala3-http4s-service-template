@@ -13,7 +13,7 @@ object parser {
   final def decode[A](
     load: => Config,
     path: Option[String] = None
-  )(implicit
+  )(using
     decoder: ConfigDecoder[A]
   ): DecodeResult[A] =
     Either
@@ -44,6 +44,6 @@ object parser {
   final def decode[A: ConfigDecoder](path: String): DecodeResult[A] =
     decode(ConfigFactory.load(), path.some)
 
-  final def decodeF[F[_], A: ConfigDecoder]()(implicit ev: ApplicativeError[F, Throwable]): F[A] =
+  final def decodeF[F[_], A: ConfigDecoder]()(using ev: ApplicativeError[F, Throwable]): F[A] =
     decode[A].leftWiden[Throwable].liftTo[F]
 }

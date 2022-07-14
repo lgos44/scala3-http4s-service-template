@@ -47,7 +47,7 @@ object UserRepository {
   ): UserRepository[F] =
     new UserRepository[F] with Repository[F] {
 
-      import ctx._
+      import ctx.*
 
       val transactor: Transactor[F] = xa
 

@@ -1,8 +1,8 @@
 package io.lgos.template.config.generic
 
 import com.typesafe.config.Config
-import cats.implicits._
-import cats.data._
+import cats.implicits.*
+import cats.data.*
 
 sealed trait ConfigError extends Throwable
 

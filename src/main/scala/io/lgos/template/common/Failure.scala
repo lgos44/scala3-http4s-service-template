@@ -2,7 +2,7 @@ package io.lgos.template.common
 
 import io.circe.{Decoder, Encoder, Json}
 import io.circe.HCursor
-import sttp.tapir.generic.auto._
+import sttp.tapir.generic.auto.*
 
 sealed trait Failure extends Exception {
   def message: String
