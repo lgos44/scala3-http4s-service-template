@@ -125,7 +125,10 @@ class UserSpec extends BaseSpec with PgContainer with DefaultTestConfig with Asy
 }
 
 object UserSpec {
-  private val basePath = "http://localhost:8080/api/v1"
+  private def basePath()(using fixture: Fixture) = {
+    val serverConfig = fixture.modules.config.server
+    s"http://${serverConfig.host}:${serverConfig.port}/api/v1"
+  }
   private val random = new Random()
 
   def randomLoginEmailPassword(): (String, String, String) =
@@ -147,7 +150,7 @@ object UserSpec {
   )(using fixture: Fixture
   ): IO[Response[Either[String, String]]] =
     basicRequest
-      .post(uri"$basePath/users")
+      .post(uri"${basePath()}/users")
       .body(body)
       .send(fixture.sttpBackend)
 
@@ -156,7 +159,7 @@ object UserSpec {
   )(using fixture: Fixture
   ): IO[Response[Either[String, String]]] =
     basicRequest
-      .get(uri"$basePath/users/${id}")
+      .get(uri"${basePath()}/users/${id}")
       .send(fixture.sttpBackend)
 
   def updateUser(
@@ -168,7 +171,7 @@ object UserSpec {
   )(using fixture: Fixture
   ): IO[Response[Either[String, String]]] =
     basicRequest
-      .put(uri"$basePath/users/${id}")
+      .put(uri"${basePath()}/users/${id}")
       .body(UpdateUserRequest(email, username, firstName, lastName).asJson.noSpaces)
       .send(fixture.sttpBackend)
 }
