@@ -1,3 +1,8 @@
+import scala.util.Try
+import sbtbuildinfo.BuildInfoKey.action
+import sbtbuildinfo.BuildInfoKeys.{buildInfoKeys, buildInfoOptions, buildInfoPackage}
+import sbtbuildinfo.{BuildInfoKey, BuildInfoOption}
+
 val CatsVersion = "2.6.1"
 val CatsEffectVersion = "3.3.12"
 val Http4sVersion = "0.23.12"
@@ -93,10 +98,28 @@ lazy val dockerSettings = Seq(
   dockerUpdateLatest := true
 )
 
+lazy val buildInfoSettings = Seq(
+  buildInfoKeys := Seq[BuildInfoKey](
+    name,
+    version,
+    scalaVersion,
+    sbtVersion,
+    action("lastCommitHash") {
+      import scala.sys.process._
+      // if the build is done outside of a git repository, we still want it to succeed
+      Try("git rev-parse HEAD".!!.trim).getOrElse("?")
+    }
+  ),
+  buildInfoPackage := "io.lgos.template.version",
+  buildInfoObject := "BuildInfo"
+)
+
 lazy val root = (project in file("."))
+  .enablePlugins(BuildInfoPlugin)
   .enablePlugins(DockerPlugin)
   .enablePlugins(JavaServerAppPackaging)
   .settings(dockerSettings)
+  .settings(buildInfoSettings)
   .settings(
     organization := "io.lgos",
     name := "template",

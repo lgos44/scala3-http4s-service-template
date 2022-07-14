@@ -5,6 +5,7 @@ import io.lgos.template.api.Http
 import sttp.tapir.server.ServerEndpoint
 import io.lgos.template.infrastructure.Json.*
 import io.lgos.template.common.Failure
+import io.lgos.template.version.BuildInfo
 import sttp.model.StatusCode
 
 class VersionRoutes[F[_]: Async] {
@@ -16,11 +17,25 @@ class VersionRoutes[F[_]: Async] {
     .out(jsonBody[VersionResponse])
     .errorOut(statusCode(StatusCode.InternalServerError).and(jsonBody[Failure]))
     .serverLogic { _ =>
-      Async[F].pure(VersionResponse("0.1")).toOut
+      Async[F].pure(VersionResponse()).toOut
     }
 }
 
 object VersionRoutes {
   def apply(): VersionRoutes[IO] = new VersionRoutes[IO]
-  case class VersionResponse(buildSha: String)
+  case class VersionResponse(
+      name: String,
+      version: String,
+      scalaVersion: String,
+      sbtVersion: String,
+      buildSha: String)
+  object VersionResponse {
+    def apply(): VersionResponse = VersionResponse(
+      name = BuildInfo.name,
+      version = BuildInfo.version,
+      scalaVersion = BuildInfo.scalaVersion,
+      sbtVersion = BuildInfo.sbtVersion,
+      buildSha = BuildInfo.lastCommitHash
+    )
+  }
 }
